@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Eye, Pencil, Search, Trash2, X } from "lucide-react";
 
@@ -184,16 +185,12 @@ export default function BlogsPage() {
           <p className="mt-1 text-sm text-gray-500">Home / Blogs</p>
         </div>
 
-        <button
-          onClick={() => {
-            resetForm();
-            setModal("addBlog");
-          }}
+        <Link
+          href="/admin/addblog"
           className="rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
-          type="button"
         >
           Add Blog
-        </button>
+        </Link>
       </div>
 
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

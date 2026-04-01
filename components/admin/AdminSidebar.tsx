@@ -275,6 +275,7 @@ import {
   Camera,
   Trash2,
   X,
+  Book,
 } from "lucide-react";
 
 const DEFAULT_IMAGE = "https://i.pravatar.cc/100?img=12";
@@ -289,6 +290,7 @@ type MenuItem = {
 const menuItems: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, href: "/admin" },
   { label: "Customers", icon: Users, href: "/admin/customers" },
+  { label: "Courses", icon: Book, href: "/admin/course"},
   { label: "Experts", icon: UserRound, href: "/admin/experts" },
   { label: "Products", icon: ShoppingCart, href: "/admin/products" },
   { label: "Share & Earn", icon: Share2, href: "/admin/share-earn" },
@@ -393,8 +395,9 @@ export default function AdminSidebar({ open, setOpen }: Props) {
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-[290px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"
-          }`}
+        className={`fixed left-0 top-0 z-50 flex h-screen w-[290px] flex-col border-r border-slate-200 bg-white transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
         <div className="border-b border-slate-200 px-5 py-5">
           <div className="flex items-center justify-between">
@@ -498,7 +501,11 @@ export default function AdminSidebar({ open, setOpen }: Props) {
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      if (window.innerWidth < 1024) {
+                        setOpen(false);
+                      }
+                    }}
                     className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 ${isActive
                         ? "bg-blue-600 text-white"
                         : "text-slate-700 hover:bg-slate-100"

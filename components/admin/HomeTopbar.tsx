@@ -42,8 +42,8 @@ export default function HomeTopbar({ setOpen }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setOpen(true)}
-            className="rounded-md p-2 hover:bg-slate-100 lg:hidden"
+            onClick={() => setOpen((prev) => !prev)}
+            className="rounded-md p-2 hover:bg-slate-100"
           >
             <Menu className="h-6 w-6 text-slate-700" />
           </button>
