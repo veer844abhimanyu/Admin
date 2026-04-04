@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminLayout from "@/components/AdminLayout";
 
 type Customer = {
   id: number;

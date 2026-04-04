@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import AdminSidebar from "@/components/admin/AdminSidebar";
-import HomeTopbar from "@/components/admin/HomeTopbar";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import AdminSidebar from "@/components/AdminSidebar";
+import HomeTopbar from "@/components/HomeTopbar";
 import {
   Users,
   UserRound,
@@ -12,13 +13,13 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
-const stats = [
-  { title: "Customers", value: 1022, icon: Users, box: "bg-sky-500" },
-  { title: "Experts", value: 4, icon: UserRound, box: "bg-green-600" },
-  { title: "Enroll", value: 289, icon: GraduationCap, box: "bg-red-500" },
-  { title: "Appointments", value: 266, icon: CalendarDays, box: "bg-blue-600" },
-  { title: "Share & Earn", value: 98, icon: Share2, box: "bg-yellow-500" },
-  { title: "Products", value: 10, icon: ShoppingCart, box: "bg-slate-500" },
+const initialStats = [
+  { title: "Customers", value: 1022, icon: Users, box: "bg-sky-500", route: "/customers", key: "customers" },
+  { title: "Experts", value: 4, icon: UserRound, box: "bg-green-600", route: "#", key: "experts" },
+  { title: "Enroll", value: 289, icon: GraduationCap, box: "bg-red-500", route: "#", key: "enrollments" },
+  { title: "Appointments", value: 266, icon: CalendarDays, box: "bg-blue-600", route: "#", key: "appointments" },
+  { title: "Share & Earn", value: 98, icon: Share2, box: "bg-yellow-500", route: "/share-earn", key: "shareEarn" },
+  { title: "Products", value: 10, icon: ShoppingCart, box: "bg-slate-500", route: "/products", key: "products" },
 ];
 
 const enrollments = [
@@ -71,6 +72,49 @@ const orders = [
 
 export default function HomePage() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [stats, setStats] = useState(initialStats);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch stats from API
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("/api/stats");
+      if (!response.ok) throw new Error("Failed to fetch stats");
+      
+      const data = await response.json();
+      
+      // Update stats with fetched data
+      const updatedStats = initialStats.map((stat) => ({
+        ...stat,
+        value: data[stat.key] || stat.value,
+      }));
+      
+      setStats(updatedStats);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      // Keep existing stats if fetch fails
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch stats on mount and set up auto-refresh
+  useEffect(() => {
+    fetchStats();
+    
+    // Set up auto-refresh every 5 seconds
+    const interval = setInterval(fetchStats, 5000);
+    
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleCardClick = (route: string) => {
+    if (route !== "#") {
+      router.push(route);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f3f5f9]">
@@ -85,9 +129,15 @@ export default function HomePage() {
               {stats.slice(0, 4).map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div
+                  <button
                     key={item.title}
-                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                    onClick={() => handleCardClick(item.route)}
+                    disabled={item.route === "#"}
+                    className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-left transition-all ${
+                      item.route !== "#"
+                        ? "cursor-pointer hover:shadow-md hover:border-slate-300 hover:bg-slate-50"
+                        : "cursor-not-allowed opacity-75"
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
@@ -104,7 +154,7 @@ export default function HomePage() {
                         </h3>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -113,9 +163,15 @@ export default function HomePage() {
               {stats.slice(4).map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div
+                  <button
                     key={item.title}
-                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                    onClick={() => handleCardClick(item.route)}
+                    disabled={item.route === "#"}
+                    className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm text-left transition-all ${
+                      item.route !== "#"
+                        ? "cursor-pointer hover:shadow-md hover:border-slate-300 hover:bg-slate-50"
+                        : "cursor-not-allowed opacity-75"
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
@@ -132,7 +188,7 @@ export default function HomePage() {
                         </h3>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
               <div className="hidden xl:block" />

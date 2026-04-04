@@ -1,6 +1,6 @@
 "use client";
 // import AdminTopbar from "@/components/Admin/AdminTopbar";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminLayout from "@/components/AdminLayout";
 import Link from "next/link";
 import { BookOpen, Plus, Search, Edit, Trash2 } from "lucide-react";
 import { useState } from "react";

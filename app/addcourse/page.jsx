@@ -13,7 +13,7 @@ import {
   IndianRupee,
   List
 } from "lucide-react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminLayout from "@/components/AdminLayout";
 
 export default function AddCoursePage() {
   const router = useRouter();

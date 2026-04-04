@@ -23,7 +23,7 @@ import {
   Redo,
   Type,
 } from "lucide-react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminLayout from "@/components/AdminLayout";
 
 export default function AddBlogPage() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Eye, Gift, Pencil, Search, Trash2, X } from "lucide-react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminLayout from "@/components/AdminLayout";
 
 type ShareEarnItem = {
   id: number;

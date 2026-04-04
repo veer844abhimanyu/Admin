@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Pencil, Search, X } from "lucide-react";
-import AdminLayout from "@/components/admin/AdminLayout";
+import AdminLayout from "@/components/AdminLayout";
 
 type MetaItem = {
   id: number;
