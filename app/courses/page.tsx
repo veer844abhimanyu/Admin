@@ -28,16 +28,16 @@ type Course = {
 };
 
 const initialCourses: Course[] = [
-  {
-    id: 1,
-    title: "Untitled Course",
-    category: "Uncategorized",
-    instructor: "Masteriyo Team",
-    priceType: "free",
-    students: 0,
-    date: "2026-04-04 04:38 PM",
-    status: "draft",
-  },
+  // {
+  //   id: 1,
+  //   title: "Untitled Course",
+  //   category: "Uncategorized",
+  //   instructor: "Masteriyo Team",
+  //   priceType: "free",
+  //   students: 0,
+  //   date: "2026-04-04 04:38 PM",
+  //   status: "draft",
+  // },
   {
     id: 2,
     title: "Untitled Course",
