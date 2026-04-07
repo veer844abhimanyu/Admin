@@ -34,7 +34,7 @@ type MenuItem = {
 const menuItems: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, href: "/" },
   { label: "Customers", icon: Users, href: "/customers" },
-  { label: "Courses", icon: Book, href: "/course"},
+  { label: "Courses", icon: Book, href: "/courses"},
   { label: "Experts", icon: UserRound, href: "/experts" },
   { label: "Products", icon: ShoppingCart, href: "/products" },
   { label: "Share & Earn", icon: Share2, href: "/share-earn" },

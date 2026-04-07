@@ -1,5 +1,5 @@
 ﻿"use client";
-
+import AdminLayout from "@/components/AdminLayout";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
@@ -251,7 +251,7 @@ export default function CoursesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <AdminLayout>
       <div className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
@@ -580,6 +580,6 @@ export default function CoursesPage() {
           </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }
