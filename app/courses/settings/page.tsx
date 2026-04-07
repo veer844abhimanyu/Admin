@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import Link from "next/link";
@@ -83,10 +81,10 @@ export default function CourseSettingsPage() {
   // Pricing
   const [pricingType, setPricingType] = useState<"free" | "paid">("free");
   const [freeAccessType, setFreeAccessType] = useState<"open" | "registration">(
-    "open"
+    "open",
   );
   const [paymentMode, setPaymentMode] = useState<"oneTime" | "recurring">(
-    "oneTime"
+    "oneTime",
   );
   const [regularPrice, setRegularPrice] = useState("");
   const [salePrice, setSalePrice] = useState("");
@@ -137,7 +135,7 @@ export default function CourseSettingsPage() {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(true);
   const [welcomeTitle, setWelcomeTitle] = useState("Welcome to the Course.");
   const [welcomeDescription, setWelcomeDescription] = useState(
-    "Get ready to dive into exciting lessons, connect with peers, and unlock new possibilities. Let's embark on this educational adventure together!"
+    "Get ready to dive into exciting lessons, connect with peers, and unlock new possibilities. Let's embark on this educational adventure together!",
   );
 
   // Content Drip
@@ -275,7 +273,7 @@ export default function CourseSettingsPage() {
 
       showFaq,
       faqs,
-    ]
+    ],
   );
 
   const handleSave = () => {
@@ -308,15 +306,9 @@ export default function CourseSettingsPage() {
     ]);
   };
 
-  const updateFaq = (
-    id: number,
-    field: "title" | "content",
-    value: string
-  ) => {
+  const updateFaq = (id: number, field: "title" | "content", value: string) => {
     setFaqs((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, [field]: value } : item
-      )
+      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)),
     );
   };
 
@@ -523,8 +515,9 @@ export default function CourseSettingsPage() {
                                   </label>
                                   <select className="h-11 w-full rounded-md border border-slate-300 px-3 outline-none focus:border-blue-500">
                                     <option>Monthly</option>
+                                    <option>3 Months</option>
+                                    <option>6 Months</option>
                                     <option>Yearly</option>
-                                    <option>Weekly</option>
                                   </select>
                                 </div>
                               </div>
@@ -651,9 +644,7 @@ export default function CourseSettingsPage() {
                           </label>
                           <select
                             value={difficultyLevel}
-                            onChange={(e) =>
-                              setDifficultyLevel(e.target.value)
-                            }
+                            onChange={(e) => setDifficultyLevel(e.target.value)}
                             className="h-10 rounded border border-slate-300 px-3 text-sm outline-none focus:border-blue-500"
                           >
                             <option value="">Choose Course Level</option>
@@ -672,9 +663,7 @@ export default function CourseSettingsPage() {
                               type="number"
                               min="0"
                               value={durationHours}
-                              onChange={(e) =>
-                                setDurationHours(e.target.value)
-                              }
+                              onChange={(e) => setDurationHours(e.target.value)}
                               className="h-10 rounded border border-slate-300 px-3 text-sm outline-none focus:border-blue-500"
                             />
                             <div className="flex h-10 items-center text-sm text-slate-700">
@@ -787,9 +776,7 @@ export default function CourseSettingsPage() {
                           <input
                             type="text"
                             value={coursePassword}
-                            onChange={(e) =>
-                              setCoursePassword(e.target.value)
-                            }
+                            onChange={(e) => setCoursePassword(e.target.value)}
                             placeholder="Set the password for the course"
                             className="h-10 rounded border border-slate-300 px-3 text-sm outline-none focus:border-blue-500"
                           />
@@ -958,9 +945,7 @@ export default function CourseSettingsPage() {
                             <input
                               type="date"
                               value={courseEndDate}
-                              onChange={(e) =>
-                                setCourseEndDate(e.target.value)
-                              }
+                              onChange={(e) => setCourseEndDate(e.target.value)}
                               className="h-10 rounded border border-slate-300 px-3 text-sm outline-none focus:border-blue-500"
                             />
                           </div>
@@ -1260,9 +1245,7 @@ export default function CourseSettingsPage() {
                         <input
                           type="text"
                           value={prerequisiteInput}
-                          onChange={(e) =>
-                            setPrerequisiteInput(e.target.value)
-                          }
+                          onChange={(e) => setPrerequisiteInput(e.target.value)}
                           placeholder="Enter prerequisite course name"
                           className="h-11 flex-1 rounded-lg border border-slate-300 px-3 outline-none focus:border-blue-500"
                         />
@@ -1363,22 +1346,13 @@ export default function CourseSettingsPage() {
                                     <select className="rounded border border-slate-200 bg-white px-2 py-1 text-xs outline-none">
                                       <option>Paragraph</option>
                                     </select>
-                                    <button
-                                      type="button"
-                                      className="font-bold"
-                                    >
+                                    <button type="button" className="font-bold">
                                       B
                                     </button>
-                                    <button
-                                      type="button"
-                                      className="italic"
-                                    >
+                                    <button type="button" className="italic">
                                       I
                                     </button>
-                                    <button
-                                      type="button"
-                                      className="underline"
-                                    >
+                                    <button type="button" className="underline">
                                       U
                                     </button>
                                     <button type="button">≡</button>
@@ -1394,7 +1368,7 @@ export default function CourseSettingsPage() {
                                       updateFaq(
                                         faq.id,
                                         "content",
-                                        e.target.value
+                                        e.target.value,
                                       )
                                     }
                                     rows={10}
