@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -20,6 +19,7 @@ import {
   Trash2,
   X,
   Book,
+  Home,
 } from "lucide-react";
 
 const DEFAULT_IMAGE = "https://i.pravatar.cc/100?img=12";
@@ -33,15 +33,20 @@ type MenuItem = {
 
 const menuItems: MenuItem[] = [
   { label: "Dashboard", icon: LayoutGrid, href: "/" },
+  { label: "Home", icon: Home, href: "/home" },
   { label: "Customers", icon: Users, href: "/customers" },
-  { label: "Courses", icon: Book, href: "/courses"},
+  { label: "Courses", icon: Book, href: "/courses" },
   { label: "Experts", icon: UserRound, href: "/experts" },
   { label: "Products", icon: ShoppingCart, href: "/products" },
   { label: "Share & Earn", icon: Share2, href: "/share-earn" },
   { label: "Blogs", icon: Rss, href: "/blogs" },
   { label: "Demo class link", icon: Video, href: "/demo-class-link" },
   { label: "Self Diagnosis", icon: Stethoscope, href: "/self-diagnosis" },
-  { label: "Diagnosis Subscription", icon: ClipboardList, href: "/diagnosis-subscription" },
+  {
+    label: "Diagnosis Subscription",
+    icon: ClipboardList,
+    href: "/diagnosis-subscription",
+  },
   { label: "Meta & Desc", icon: FileText, href: "/meta-desc" },
 ];
 
@@ -178,7 +183,9 @@ export default function AdminSidebar({ open, setOpen }: Props) {
               />
             </button>
 
-            <p className="text-[14px] font-semibold text-slate-700">{adminName}</p>
+            <p className="text-[14px] font-semibold text-slate-700">
+              {adminName}
+            </p>
 
             {showPhotoMenu && (
               <div className="absolute left-0 top-14 z-20 w-44 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
@@ -214,7 +221,6 @@ export default function AdminSidebar({ open, setOpen }: Props) {
 
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="space-y-1.5">
-
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -229,10 +235,11 @@ export default function AdminSidebar({ open, setOpen }: Props) {
                         setOpen(false);
                       }
                     }}
-                    className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 ${isActive
+                    className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 ${
+                      isActive
                         ? "bg-blue-600 text-white"
                         : "text-slate-700 hover:bg-slate-100"
-                      }`}
+                    }`}
                   >
                     <Icon className="h-5 w-5" />
                     <span>{item.label}</span>
