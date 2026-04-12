@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 import AdminLayout from "@/components/AdminLayout";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Search,
@@ -101,6 +102,7 @@ const tabs = [
 type TabKey = (typeof tabs)[number]["key"];
 
 export default function CoursesPage() {
+  const router = useRouter();
   const [courses, setCourses] = useState<Course[]>(initialCourses);
   const [activeTab, setActiveTab] = useState<TabKey>("all");
   const [search, setSearch] = useState("");
@@ -139,9 +141,7 @@ export default function CoursesPage() {
           : course.category === selectedCategory;
 
       const matchesPricing =
-        selectedPricing === "all"
-          ? true
-          : course.priceType === selectedPricing;
+        selectedPricing === "all" ? true : course.priceType === selectedPricing;
 
       return matchesTab && matchesSearch && matchesCategory && matchesPricing;
     });
@@ -154,7 +154,9 @@ export default function CoursesPage() {
   const toggleSelectAll = () => {
     if (allVisibleSelected) {
       setSelectedRows((prev) =>
-        prev.filter((id) => !filteredCourses.some((course) => course.id === id))
+        prev.filter(
+          (id) => !filteredCourses.some((course) => course.id === id),
+        ),
       );
     } else {
       const visibleIds = filteredCourses.map((course) => course.id);
@@ -164,27 +166,27 @@ export default function CoursesPage() {
 
   const toggleSelectRow = (id: number) => {
     setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
-  const handleEdit = (id: number) => {
-    const newTitle = window.prompt("Enter new course title:");
-    if (!newTitle?.trim()) return;
+  // const handleEdit = (id: number) => {
+  //   const newTitle = window.prompt("Enter new course title:");
+  //   if (!newTitle?.trim()) return;
 
-    setCourses((prev) =>
-      prev.map((course) =>
-        course.id === id ? { ...course, title: newTitle.trim() } : course
-      )
-    );
-    setOpenMenuId(null);
-  };
+  //   setCourses((prev) =>
+  //     prev.map((course) =>
+  //       course.id === id ? { ...course, title: newTitle.trim() } : course,
+  //     ),
+  //   );
+  //   setOpenMenuId(null);
+  // };
 
   const moveToTrash = (id: number) => {
     setCourses((prev) =>
       prev.map((course) =>
-        course.id === id ? { ...course, status: "trash" } : course
-      )
+        course.id === id ? { ...course, status: "trash" } : course,
+      ),
     );
     setOpenMenuId(null);
   };
@@ -192,8 +194,8 @@ export default function CoursesPage() {
   const makePrivate = (id: number) => {
     setCourses((prev) =>
       prev.map((course) =>
-        course.id === id ? { ...course, status: "private" } : course
-      )
+        course.id === id ? { ...course, status: "private" } : course,
+      ),
     );
     setOpenMenuId(null);
   };
@@ -201,8 +203,8 @@ export default function CoursesPage() {
   const publishCourse = (id: number) => {
     setCourses((prev) =>
       prev.map((course) =>
-        course.id === id ? { ...course, status: "published" } : course
-      )
+        course.id === id ? { ...course, status: "published" } : course,
+      ),
     );
     setOpenMenuId(null);
   };
@@ -235,7 +237,7 @@ export default function CoursesPage() {
     ]);
 
     const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
-      "\n"
+      "\n",
     );
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -260,10 +262,11 @@ export default function CoursesPage() {
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`border-b-2 pb-3 transition ${activeTab === tab.key
+                  className={`border-b-2 pb-3 transition ${
+                    activeTab === tab.key
                       ? "border-blue-600 text-blue-600"
                       : "border-transparent text-slate-600 hover:text-blue-600"
-                    }`}
+                  }`}
                 >
                   {tab.label}
                   <span className="ml-2 rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700">
@@ -426,7 +429,9 @@ export default function CoursesPage() {
 
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => handleEdit(course.id)}
+                          onClick={() =>
+                            router.push("/courses/editcourse?id=" + course.id)
+                          }
                           className="inline-flex items-center gap-2 rounded-lg border border-blue-500 px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
                         >
                           <Pencil className="h-4 w-4" />
@@ -437,7 +442,7 @@ export default function CoursesPage() {
                           <button
                             onClick={() =>
                               setOpenMenuId((prev) =>
-                                prev === course.id ? null : course.id
+                                prev === course.id ? null : course.id,
                               )
                             }
                             className="rounded-lg border border-slate-300 p-2 text-slate-600 transition hover:bg-slate-100"
@@ -535,7 +540,11 @@ export default function CoursesPage() {
 
                           <div className="mt-4 flex flex-wrap gap-2">
                             <button
-                              onClick={() => handleEdit(course.id)}
+                              onClick={() =>
+                                router.push(
+                                  "/courses/editcourse?id=" + course.id,
+                                )
+                              }
                               className="inline-flex items-center gap-2 rounded-lg border border-blue-500 px-3 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-50"
                             >
                               <Pencil className="h-4 w-4" />
