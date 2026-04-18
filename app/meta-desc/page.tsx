@@ -35,7 +35,8 @@ const initialMetaItems: MetaItem[] = [
   },
   {
     id: 3,
-    metaTitle: "Basic ayurveda,medical astrology & telepathy course for beginner",
+    metaTitle:
+      "Basic ayurveda,medical astrology & telepathy course for beginner",
     metaKeywords:
       "Nadi Pariksha Course, ayurveda beginner student course, diy & cat course,",
     description:
@@ -84,7 +85,7 @@ export default function MetaDescPage() {
       [item.metaTitle, item.metaKeywords, item.description, item.page]
         .join(" ")
         .toLowerCase()
-        .includes(q)
+        .includes(q),
     );
   }, [items, search]);
 
@@ -98,7 +99,11 @@ export default function MetaDescPage() {
   };
 
   const handleAdd = () => {
-    if (!form.metaTitle.trim() || !form.metaKeywords.trim() || !form.description.trim()) {
+    if (
+      !form.metaTitle.trim() ||
+      !form.metaKeywords.trim() ||
+      !form.description.trim()
+    ) {
       return;
     }
 
@@ -128,7 +133,11 @@ export default function MetaDescPage() {
 
   const handleUpdate = () => {
     if (!selectedItem) return;
-    if (!form.metaTitle.trim() || !form.metaKeywords.trim() || !form.description.trim()) {
+    if (
+      !form.metaTitle.trim() ||
+      !form.metaKeywords.trim() ||
+      !form.description.trim()
+    ) {
       return;
     }
 
@@ -142,8 +151,8 @@ export default function MetaDescPage() {
               description: form.description,
               page: form.page,
             }
-          : item
-      )
+          : item,
+      ),
     );
 
     setSelectedItem(null);
@@ -156,8 +165,12 @@ export default function MetaDescPage() {
       <div className="rounded-2xl bg-white p-4 shadow-sm md:p-6">
         <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-800">Meta & Description</h1>
-            <p className="mt-1 text-sm text-gray-500">Home / Meta & Description</p>
+            <h1 className="text-2xl font-semibold text-gray-800">
+              Meta & Description
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Home / Meta & Description
+            </p>
           </div>
 
           <button
@@ -186,7 +199,9 @@ export default function MetaDescPage() {
 
           <div className="text-sm text-gray-500">
             Total:
-            <span className="ml-1 font-semibold text-gray-700">{filteredItems.length}</span>
+            <span className="ml-1 font-semibold text-gray-700">
+              {filteredItems.length}
+            </span>
           </div>
         </div>
 
@@ -206,13 +221,19 @@ export default function MetaDescPage() {
               {filteredItems.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50 align-top">
                   <td className="px-4 py-3 text-gray-800">
-                    <p className="min-w-[220px] max-w-[260px]">{item.metaTitle}</p>
+                    <p className="min-w-[220px] max-w-[260px]">
+                      {item.metaTitle}
+                    </p>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    <p className="min-w-[220px] max-w-[260px]">{item.metaKeywords}</p>
+                    <p className="min-w-[220px] max-w-[260px]">
+                      {item.metaKeywords}
+                    </p>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
-                    <p className="min-w-[320px] max-w-[380px]">{item.description}</p>
+                    <p className="min-w-[320px] max-w-[380px]">
+                      {item.description}
+                    </p>
                   </td>
                   <td className="px-4 py-3 text-gray-700">
                     <span className="rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
@@ -234,7 +255,10 @@ export default function MetaDescPage() {
 
               {filteredItems.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-sm text-gray-500">
+                  <td
+                    colSpan={5}
+                    className="px-4 py-10 text-center text-sm text-gray-500"
+                  >
                     No meta records found.
                   </td>
                 </tr>
@@ -256,21 +280,27 @@ export default function MetaDescPage() {
               type="text"
               placeholder="Meta title"
               value={form.metaTitle}
-              onChange={(e) => setForm((prev) => ({ ...prev, metaTitle: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, metaTitle: e.target.value }))
+              }
               className="rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
             <textarea
               placeholder="Meta keywords"
               value={form.metaKeywords}
-              onChange={(e) => setForm((prev) => ({ ...prev, metaKeywords: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, metaKeywords: e.target.value }))
+              }
               className="min-h-[100px] rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
             <textarea
               placeholder="Description"
               value={form.description}
-              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+              }
               className="min-h-[120px] rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
@@ -278,7 +308,9 @@ export default function MetaDescPage() {
               type="text"
               placeholder="Page"
               value={form.page}
-              onChange={(e) => setForm((prev) => ({ ...prev, page: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, page: e.target.value }))
+              }
               className="rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
@@ -306,21 +338,27 @@ export default function MetaDescPage() {
               type="text"
               placeholder="Meta title"
               value={form.metaTitle}
-              onChange={(e) => setForm((prev) => ({ ...prev, metaTitle: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, metaTitle: e.target.value }))
+              }
               className="rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
             <textarea
               placeholder="Meta keywords"
               value={form.metaKeywords}
-              onChange={(e) => setForm((prev) => ({ ...prev, metaKeywords: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, metaKeywords: e.target.value }))
+              }
               className="min-h-[100px] rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
             <textarea
               placeholder="Description"
               value={form.description}
-              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+              }
               className="min-h-[120px] rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 
@@ -328,7 +366,9 @@ export default function MetaDescPage() {
               type="text"
               placeholder="Page"
               value={form.page}
-              onChange={(e) => setForm((prev) => ({ ...prev, page: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, page: e.target.value }))
+              }
               className="rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
 

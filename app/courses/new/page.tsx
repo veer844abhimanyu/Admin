@@ -185,7 +185,7 @@
 //                 className="h-10 w-full rounded-sm border border-slate-300 px-3 text-sm outline-none focus:border-blue-500"
 //               />
 //             </div>
-//             {/* 
+//             {/*
 //             <div>
 //               <label className="mb-2 block text-xs font-medium text-slate-600">
 //                 Course Description
@@ -533,39 +533,12 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ChevronDown,
   Eye,
@@ -590,6 +563,7 @@ type Category = {
 };
 
 export default function NewCoursePage() {
+  const router = useRouter();
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [courseHighlights, setCourseHighlights] = useState(".");
@@ -618,8 +592,8 @@ export default function NewCoursePage() {
   const toggleCategory = (id: number) => {
     setCategories((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
+        item.id === id ? { ...item, checked: !item.checked } : item,
+      ),
     );
   };
 
@@ -629,7 +603,7 @@ export default function NewCoursePage() {
     if (!trimmed) return;
 
     const alreadyExists = categories.some(
-      (item) => item.name.toLowerCase() === trimmed.toLowerCase()
+      (item) => item.name.toLowerCase() === trimmed.toLowerCase(),
     );
 
     if (alreadyExists) {
@@ -680,20 +654,43 @@ export default function NewCoursePage() {
       .filter((item) => item.checked)
       .map((item) => item.name);
 
-    const payload = {
-      courseName,
-      courseDescription,
-      courseHighlights,
-      featured,
-      slug,
-      selectedCategories,
-      featuredImage: featuredImage?.name || null,
-      featuredVideo: featuredVideo?.name || null,
-      attachments: attachments.map((file) => file.name),
+    if (!courseName.trim()) {
+      alert("Please enter a course name");
+      return;
+    }
+
+    const newCourse = {
+      id: Date.now(),
+      title: courseName,
+      category: selectedCategories[0] || "Uncategorized",
+      instructor: "Admin Team",
+      priceType: "free" as const,
+      students: 0,
+      date: new Date().toLocaleString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+      status: "published" as const,
     };
 
-    console.log("Publish Course:", payload);
-    alert("Course published successfully (frontend demo)");
+    try {
+      const existingCoursesRaw = localStorage.getItem("admin_courses");
+      const existingCourses = existingCoursesRaw
+        ? JSON.parse(existingCoursesRaw)
+        : [];
+      const updatedCourses = [newCourse, ...existingCourses];
+      localStorage.setItem("admin_courses", JSON.stringify(updatedCourses));
+
+      alert("Course published successfully!");
+      router.push("/courses");
+    } catch (e) {
+      console.error("Failed to publish course", e);
+      alert("Failed to publish course. Please try again.");
+    }
   };
 
   return (

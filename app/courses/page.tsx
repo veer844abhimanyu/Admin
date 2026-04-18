@@ -1,7 +1,7 @@
 "use client";
 import AdminLayout from "@/components/AdminLayout";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus,
@@ -111,6 +111,30 @@ export default function CoursesPage() {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
+  // Load from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("admin_courses");
+    if (saved) {
+      try {
+        setCourses(JSON.parse(saved));
+      } catch (e) {
+        console.error("Error loading courses", e);
+      }
+    }
+  }, []);
+
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem("admin_courses", JSON.stringify(courses));
+  }, [courses]);
+
+  const statusConfig: Record<CourseStatus, { label: string; color: string }> = {
+    published: { label: "Published", color: "bg-green-50 text-green-700" },
+    draft: { label: "Draft", color: "bg-blue-50 text-blue-700" },
+    private: { label: "Private", color: "bg-amber-50 text-amber-700" },
+    trash: { label: "Trash", color: "bg-red-50 text-red-700" },
+  };
+
   const categories = useMemo(() => {
     const unique = Array.from(new Set(courses.map((c) => c.category)));
     return ["all", ...unique];
@@ -118,7 +142,7 @@ export default function CoursesPage() {
 
   const counts = useMemo(() => {
     return {
-      all: courses.length,
+      all: courses.filter((c) => c.status !== "trash").length,
       published: courses.filter((c) => c.status === "published").length,
       draft: courses.filter((c) => c.status === "draft").length,
       trash: courses.filter((c) => c.status === "trash").length,
@@ -126,10 +150,20 @@ export default function CoursesPage() {
     };
   }, [courses]);
 
+  useEffect(() => {
+    const handleClickOutside = () => setOpenMenuId(null);
+    if (openMenuId !== null) {
+      window.addEventListener("click", handleClickOutside);
+    }
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [openMenuId]);
+
   const filteredCourses = useMemo(() => {
     return courses.filter((course) => {
       const matchesTab =
-        activeTab === "all" ? true : course.status === activeTab;
+        activeTab === "all"
+          ? course.status !== "trash"
+          : course.status === activeTab;
 
       const matchesSearch = course.title
         .toLowerCase()
@@ -191,6 +225,15 @@ export default function CoursesPage() {
     setOpenMenuId(null);
   };
 
+  const moveToDraft = (id: number) => {
+    setCourses((prev) =>
+      prev.map((course) =>
+        course.id === id ? { ...course, status: "draft" } : course,
+      ),
+    );
+    setOpenMenuId(null);
+  };
+
   const makePrivate = (id: number) => {
     setCourses((prev) =>
       prev.map((course) =>
@@ -210,9 +253,37 @@ export default function CoursesPage() {
   };
 
   const deletePermanently = (id: number) => {
-    setCourses((prev) => prev.filter((course) => course.id !== id));
-    setSelectedRows((prev) => prev.filter((item) => item !== id));
-    setOpenMenuId(null);
+    if (
+      window.confirm(
+        "Are you sure you want to delete this course permanently? This action cannot be undone.",
+      )
+    ) {
+      setCourses((prev) => prev.filter((course) => course.id !== id));
+      setSelectedRows((prev) => prev.filter((item) => item !== id));
+      setOpenMenuId(null);
+    }
+  };
+
+  const bulkStatusUpdate = (status: CourseStatus) => {
+    setCourses((prev) =>
+      prev.map((course) =>
+        selectedRows.includes(course.id) ? { ...course, status } : course,
+      ),
+    );
+    setSelectedRows([]);
+  };
+
+  const bulkDeletePermanently = () => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedRows.length} courses permanently? This action cannot be undone.`,
+      )
+    ) {
+      setCourses((prev) =>
+        prev.filter((course) => !selectedRows.includes(course.id)),
+      );
+      setSelectedRows([]);
+    }
   };
 
   const exportVisibleCourses = () => {
@@ -226,7 +297,12 @@ export default function CoursesPage() {
       "Status",
     ];
 
-    const rows = filteredCourses.map((course) => [
+    const coursesToExport =
+      selectedRows.length > 0
+        ? courses.filter((c) => selectedRows.includes(c.id))
+        : filteredCourses;
+
+    const rows = coursesToExport.map((course) => [
       `"${course.title.replace(/"/g, '""')}"`,
       `"${course.category}"`,
       `"${course.instructor}"`,
@@ -351,6 +427,53 @@ export default function CoursesPage() {
             </div>
           </div>
 
+          {selectedRows.length > 0 && (
+            <div className="mb-4 flex flex-wrap items-center gap-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 shadow-sm">
+              <span className="text-sm font-semibold text-blue-700">
+                {selectedRows.length} courses selected
+              </span>
+              <div className="hidden h-4 w-px bg-blue-200 sm:block" />
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => bulkStatusUpdate("published")}
+                  className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-blue-700 shadow-sm transition hover:bg-blue-100"
+                >
+                  Publish
+                </button>
+                <button
+                  onClick={() => bulkStatusUpdate("draft")}
+                  className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                >
+                  Draft
+                </button>
+                <button
+                  onClick={() => bulkStatusUpdate("private")}
+                  className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-100"
+                >
+                  Private
+                </button>
+                <button
+                  onClick={() => bulkStatusUpdate("trash")}
+                  className="rounded-lg bg-white px-3 py-1.5 text-xs font-bold text-amber-700 shadow-sm transition hover:bg-amber-100"
+                >
+                  Trash
+                </button>
+                <button
+                  onClick={bulkDeletePermanently}
+                  className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-red-700"
+                >
+                  Delete Permanently
+                </button>
+              </div>
+              <button
+                onClick={() => setSelectedRows([])}
+                className="ml-auto text-xs font-bold text-slate-500 hover:text-slate-700"
+              >
+                Cancel Selection
+              </button>
+            </div>
+          )}
+
           <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div className="hidden md:grid md:grid-cols-[50px_2fr_1.6fr_1.6fr_1fr_1fr_1.4fr_130px] md:items-center md:bg-slate-50 md:px-4 md:py-4 md:text-xs md:font-semibold md:uppercase md:text-slate-700">
               <div>
@@ -396,11 +519,11 @@ export default function CoursesPage() {
                           <p className="truncate font-semibold text-slate-800">
                             {course.title}
                           </p>
-                          {course.status === "draft" && (
-                            <span className="rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
-                              DRAFT
-                            </span>
-                          )}
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${statusConfig[course.status].color}`}
+                          >
+                            {statusConfig[course.status].label}
+                          </span>
                         </div>
                       </div>
 
@@ -409,7 +532,7 @@ export default function CoursesPage() {
                       </div>
 
                       <div className="flex items-center gap-2 text-sm text-slate-700">
-                        <div className="h-6 w-6 rounded-full bg-gradient-to-r from-purple-400 to-pink-400" />
+                        {/* <div className="h-6 w-6 rounded-full bg-gradient-to-r from-purple-400 to-pink-400" /> */}
                         {course.instructor}
                       </div>
 
@@ -438,47 +561,72 @@ export default function CoursesPage() {
                           Edit
                         </button>
 
-                        <div className="relative">
+                        {/* <div className="relative">
                           <button
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setOpenMenuId((prev) =>
                                 prev === course.id ? null : course.id,
-                              )
-                            }
+                              );
+                            }}
                             className="rounded-lg border border-slate-300 p-2 text-slate-600 transition hover:bg-slate-100"
                           >
                             <MoreVertical className="h-4 w-4" />
                           </button>
 
                           {openMenuId === course.id && (
-                            <div className="absolute right-0 top-11 z-20 w-44 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
-                              <button
-                                onClick={() => publishCourse(course.id)}
-                                className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100"
-                              >
-                                Publish
-                              </button>
-                              <button
-                                onClick={() => makePrivate(course.id)}
-                                className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100"
-                              >
-                                Make Private
-                              </button>
-                              <button
-                                onClick={() => moveToTrash(course.id)}
-                                className="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-slate-100"
-                              >
-                                Move to Trash
-                              </button>
+                            <div className="absolute right-0 top-11 z-20 w-48 rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black ring-opacity-5">
+                              {course.status !== "published" && (
+                                <button
+                                  onClick={() => publishCourse(course.id)}
+                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100"
+                                >
+                                  Publish Course
+                                </button>
+                              )}
+                              {course.status !== "draft" &&
+                                course.status !== "trash" && (
+                                  <button
+                                    onClick={() => moveToDraft(course.id)}
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100"
+                                  >
+                                    Move to Draft
+                                  </button>
+                                )}
+                              {course.status !== "private" &&
+                                course.status !== "trash" && (
+                                  <button
+                                    onClick={() => makePrivate(course.id)}
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100"
+                                  >
+                                    Make Private
+                                  </button>
+                                )}
+                              {course.status !== "trash" ? (
+                                <button
+                                  onClick={() => moveToTrash(course.id)}
+                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100"
+                                >
+                                  Move to Trash
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => moveToDraft(course.id)}
+                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50"
+                                >
+                                  Restore to Draft
+                                </button>
+                              )}
+                              <div className="my-1 border-t border-slate-100" />
                               <button
                                 onClick={() => deletePermanently(course.id)}
-                                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
                               >
                                 Delete Permanently
                               </button>
                             </div>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
 
@@ -551,26 +699,30 @@ export default function CoursesPage() {
                               Edit
                             </button>
 
-                            <button
-                              onClick={() => publishCourse(course.id)}
-                              className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                            >
-                              Publish
-                            </button>
+                            {course.status !== "published" && (
+                              <button
+                                onClick={() => publishCourse(course.id)}
+                                className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                              >
+                                Publish
+                              </button>
+                            )}
 
-                            <button
-                              onClick={() => makePrivate(course.id)}
-                              className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                            >
-                              Private
-                            </button>
-
-                            <button
-                              onClick={() => moveToTrash(course.id)}
-                              className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                            >
-                              Trash
-                            </button>
+                            {course.status === "trash" ? (
+                              <button
+                                onClick={() => moveToDraft(course.id)}
+                                className="rounded-lg border border-blue-300 px-3 py-2 text-sm text-blue-600 hover:bg-blue-50"
+                              >
+                                Restore
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => moveToTrash(course.id)}
+                                className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                              >
+                                Trash
+                              </button>
+                            )}
 
                             <button
                               onClick={() => deletePermanently(course.id)}
