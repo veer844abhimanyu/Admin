@@ -3,53 +3,23 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Rss,
   FileText,
   ImageIcon,
-  Search,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  List,
-  ListOrdered,
-  Link2,
-  Undo,
-  Redo,
-  Type,
 } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
+
+const CkEditorField = dynamic(() => import("@/components/CkEditorField"), {
+  ssr: false,
+});
 
 export default function AddBlogPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState("blog_image");
-  const editorRef = useRef<HTMLDivElement>(null);
   const [blogContent, setBlogContent] = useState("");
-
-  const execCmd = (command: string, value: string | undefined = undefined) => {
-    document.execCommand(command, false, value);
-    if (editorRef.current) {
-      setBlogContent(editorRef.current.innerHTML);
-      editorRef.current.focus();
-    }
-  };
-
-  const handleLink = () => {
-    const url = prompt('Enter link URL:');
-    if (url) execCmd('createLink', url);
-  };
-
-  const handleImage = () => {
-    const url = prompt('Enter image URL:');
-    if (url) execCmd('insertImage', url);
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -201,99 +171,10 @@ export default function AddBlogPage() {
                 </label>
 
                 <div className="rounded-md border border-gray-300 overflow-hidden focus-within:ring-1 focus-within:ring-[#ffc107] focus-within:border-[#ffc107] transition-shadow">
-                  {/* Editor Toolbar */}
-                  <div className="bg-[#f8f9fa] border-b border-gray-300 p-2 space-y-2 select-none">
-                    <div className="flex flex-wrap items-center gap-1 text-gray-700">
-                      <span className="text-[11px] font-semibold mx-1 text-gray-400">Source</span>
-                      <button type="button" onClick={() => execCmd('removeFormat')} className="p-1.5 hover:bg-gray-200 rounded" title="Clear Formatting"><FileText className="w-4 h-4" /></button>
-                      {/* Visual separator */}
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-                      <button type="button" onClick={() => execCmd('undo')} className="p-1.5 hover:bg-gray-200 rounded" title="Undo"><Undo className="w-4 h-4" /></button>
-                      <button type="button" onClick={() => execCmd('redo')} className="p-1.5 hover:bg-gray-200 rounded" title="Redo"><Redo className="w-4 h-4" /></button>
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-                      <button type="button" onClick={() => {
-                          const term = prompt('Search term:');
-                          if (term && (window as any).find) (window as any).find(term);
-                      }} className="p-1.5 hover:bg-gray-200 rounded" title="Search"><Search className="w-4 h-4" /></button>
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-                      <button type="button" onClick={() => execCmd('bold')} className="p-1.5 hover:bg-gray-200 rounded font-serif font-bold text-base w-7 h-7 flex items-center justify-center" title="Bold">B</button>
-                      <button type="button" onClick={() => execCmd('italic')} className="p-1.5 hover:bg-gray-200 rounded font-serif italic text-base w-7 h-7 flex items-center justify-center" title="Italic">I</button>
-                      <button type="button" onClick={() => execCmd('underline')} className="p-1.5 hover:bg-gray-200 rounded font-serif underline text-base w-7 h-7 flex items-center justify-center" title="Underline">U</button>
-                      <button type="button" onClick={() => execCmd('strikeThrough')} className="p-1.5 hover:bg-gray-200 rounded font-serif line-through text-base w-7 h-7 flex items-center justify-center" title="Strikethrough">S</button>
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-                      <button type="button" onClick={() => execCmd('insertOrderedList')} className="p-1.5 hover:bg-gray-200 rounded" title="Ordered List"><ListOrdered className="w-4 h-4" /></button>
-                      <button type="button" onClick={() => execCmd('insertUnorderedList')} className="p-1.5 hover:bg-gray-200 rounded" title="Unordered List"><List className="w-4 h-4" /></button>
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-                      <button type="button" onClick={() => execCmd('justifyLeft')} className="p-1.5 hover:bg-gray-200 rounded" title="Align Left"><AlignLeft className="w-4 h-4" /></button>
-                      <button type="button" onClick={() => execCmd('justifyCenter')} className="p-1.5 hover:bg-gray-200 rounded" title="Align Center"><AlignCenter className="w-4 h-4" /></button>
-                      <button type="button" onClick={() => execCmd('justifyRight')} className="p-1.5 hover:bg-gray-200 rounded" title="Align Right"><AlignRight className="w-4 h-4" /></button>
-                      <button type="button" onClick={() => execCmd('justifyFull')} className="p-1.5 hover:bg-gray-200 rounded" title="Justify"><AlignJustify className="w-4 h-4" /></button>
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-                      <button type="button" onClick={handleLink} className="p-1.5 hover:bg-gray-200 rounded" title="Insert Link"><Link2 className="w-4 h-4" /></button>
-                      <button type="button" onClick={handleImage} className="p-1.5 hover:bg-gray-200 rounded" title="Insert Image"><ImageIcon className="w-4 h-4" /></button>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 text-gray-700 text-sm mt-1 pb-1">
-                      <select onChange={(e) => execCmd('fontName', e.target.value)} defaultValue="Normal" className="border border-gray-300 rounded px-2 py-1 bg-white outline-none w-[100px] text-xs cursor-pointer">
-                        <option value="Normal" disabled>Font</option>
-                        <option value="Arial">Arial</option>
-                        <option value="Verdana">Verdana</option>
-                        <option value="Times New Roman">Times Roman</option>
-                        <option value="Courier New">Courier</option>
-                        <option value="Georgia">Georgia</option>
-                      </select>
-                      <select onChange={(e) => execCmd('formatBlock', e.target.value)} defaultValue="Normal" className="border border-gray-300 rounded px-2 py-1 bg-white outline-none w-[100px] text-xs cursor-pointer">
-                        <option value="Normal" disabled>Style</option>
-                        <option value="P">Paragraph</option>
-                        <option value="H1">Heading 1</option>
-                        <option value="H2">Heading 2</option>
-                        <option value="H3">Heading 3</option>
-                        <option value="H4">Heading 4</option>
-                        <option value="H5">Heading 5</option>
-                        <option value="H6">Heading 6</option>
-                      </select>
-                      <select onChange={(e) => execCmd('fontSize', e.target.value)} defaultValue="Size" className="border border-gray-300 rounded px-2 py-1 bg-white outline-none w-[100px] text-xs cursor-pointer">
-                        <option value="Size" disabled>Size</option>
-                        <option value="1">Small</option>
-                        <option value="3">Normal</option>
-                        <option value="5">Large</option>
-                        <option value="7">Huge</option>
-                      </select>
-                      <div className="w-px h-5 bg-gray-300 mx-1"></div>
-
-                      {/* Text Color Picker */}
-                      <div className="relative group flex items-center bg-white border border-gray-300 rounded" title="Text Color">
-                        <div className="px-2 py-1 flex items-center gap-1 text-xs font-semibold cursor-pointer">
-                          <Type className="w-4 h-4" />
-                          <span className="text-[10px] ml-1">▼</span>
-                        </div>
-                        <input
-                          type="color"
-                          onChange={(e) => execCmd('foreColor', e.target.value)}
-                          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                          title="Text Color"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Editor Content Area */}
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    onInput={(e) => setBlogContent(e.currentTarget.innerHTML)}
-                    className="w-full min-h-[320px] p-5 text-sm outline-none font-sans leading-relaxed text-gray-800 bg-white empty:before:content-[attr(data-placeholder)] empty:before:text-gray-400 cursor-text"
-                    data-placeholder="Enter blog content here..."
-                  />
-
-                  {/* Hidden textarea to satisfy form submission constraints */}
-                  <textarea
-                    name="blogContent"
-                    required
-                    className="hidden"
+                  <CkEditorField
                     value={blogContent}
-                    readOnly
+                    onChange={setBlogContent}
+                    placeholder="Enter blog content here..."
                   />
                 </div>
               </div>
