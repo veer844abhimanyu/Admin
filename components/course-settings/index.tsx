@@ -1,0 +1,9 @@
+export { PricingTab } from "./PricingTab";
+export { GroupPricingTab } from "./GroupPricingTab";
+export { GeneralTab } from "./GeneralTab";
+export { ScheduleAccessTab } from "./ScheduleAccessTab";
+export { DisplayTab } from "./DisplayTab";
+export { ContentDripTab } from "./ContentDripTab";
+export { CertificateTab } from "./CertificateTab";
+export { PrerequisitesTab } from "./PrerequisitesTab";
+export { FaqTab } from "./FaqTab";
