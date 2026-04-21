@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, ChangeEvent } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutGrid,
   Users,
@@ -57,7 +57,7 @@ type Props = {
 
 export default function AdminSidebar({ open, setOpen }: Props) {
   const pathname = usePathname();
-  // const pathname = usePathname();
+  const router = useRouter();
 
   const [adminImage, setAdminImage] = useState<string>(DEFAULT_IMAGE);
   const [adminName, setAdminName] = useState<string>(DEFAULT_NAME);
@@ -132,6 +132,17 @@ export default function AdminSidebar({ open, setOpen }: Props) {
     localStorage.removeItem("adminImage");
     window.dispatchEvent(new Event("adminImageUpdated"));
     setShowPhotoMenu(false);
+  };
+
+  const handleLogout = () => {
+    // Clear any admin-related session data
+    localStorage.removeItem("adminImage");
+    localStorage.removeItem("adminName");
+    // If there's a login token or flag, clear it here
+    localStorage.removeItem("isLoggedIn");
+    
+    // Redirect to login page
+    router.push("/login");
   };
 
   return (
@@ -252,6 +263,7 @@ export default function AdminSidebar({ open, setOpen }: Props) {
 
         <div className="border-t border-slate-200 p-4">
           <button
+            onClick={handleLogout}
             className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-[15px] font-semibold text-slate-700 hover:bg-slate-100"
             type="button"
           >

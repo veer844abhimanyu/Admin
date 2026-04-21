@@ -111,7 +111,7 @@ export default function ProductsPage() {
       ]
         .join(" ")
         .toLowerCase()
-        .includes(q)
+        .includes(q),
     );
   }, [products, search]);
 
@@ -223,8 +223,8 @@ export default function ProductsPage() {
               status: stock === 0 ? "Out of Stock" : productForm.status,
               updatedOn: today,
             }
-          : product
-      )
+          : product,
+      ),
     );
 
     resetForm();
@@ -236,7 +236,7 @@ export default function ProductsPage() {
     if (!selectedProduct) return;
 
     setProducts((prev) =>
-      prev.filter((product) => product.id !== selectedProduct.id)
+      prev.filter((product) => product.id !== selectedProduct.id),
     );
     setSelectedProduct(null);
     setModal(null);
@@ -247,7 +247,9 @@ export default function ProductsPage() {
       <div className="rounded-2xl bg-white p-4 shadow-sm md:p-6">
         <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-800">List of Products</h1>
+            <h1 className="text-2xl font-semibold text-gray-800">
+              List of Products
+            </h1>
             <p className="mt-1 text-sm text-gray-500">Home / Products</p>
           </div>
 
@@ -317,7 +319,9 @@ export default function ProductsPage() {
                     <p className="max-w-[300px]">{product.name}</p>
                   </td>
 
-                  <td className="px-4 py-3 text-gray-700">{product.category}</td>
+                  <td className="px-4 py-3 text-gray-700">
+                    {product.category}
+                  </td>
                   <td className="px-4 py-3 text-gray-700">₹ {product.price}</td>
                   <td className="px-4 py-3 text-gray-700">{product.stock}</td>
 
@@ -333,7 +337,9 @@ export default function ProductsPage() {
                     </span>
                   </td>
 
-                  <td className="px-4 py-3 text-gray-700">{product.updatedOn}</td>
+                  <td className="px-4 py-3 text-gray-700">
+                    {product.updatedOn}
+                  </td>
 
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -370,7 +376,10 @@ export default function ProductsPage() {
 
               {filteredProducts.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-500">
+                  <td
+                    colSpan={8}
+                    className="px-4 py-10 text-center text-sm text-gray-500"
+                  >
                     No products found.
                   </td>
                 </tr>
@@ -413,7 +422,10 @@ export default function ProductsPage() {
               placeholder="Category"
               value={productForm.category}
               onChange={(e) =>
-                setProductForm((prev) => ({ ...prev, category: e.target.value }))
+                setProductForm((prev) => ({
+                  ...prev,
+                  category: e.target.value,
+                }))
               }
               className="rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
@@ -504,7 +516,9 @@ export default function ProductsPage() {
                   {selectedProduct.status}
                 </p>
                 <p>
-                  <span className="font-semibold text-gray-800">Updated on:</span>{" "}
+                  <span className="font-semibold text-gray-800">
+                    Updated on:
+                  </span>{" "}
                   {selectedProduct.updatedOn}
                 </p>
               </div>
@@ -547,7 +561,10 @@ export default function ProductsPage() {
               placeholder="Category"
               value={productForm.category}
               onChange={(e) =>
-                setProductForm((prev) => ({ ...prev, category: e.target.value }))
+                setProductForm((prev) => ({
+                  ...prev,
+                  category: e.target.value,
+                }))
               }
               className="rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
             />
