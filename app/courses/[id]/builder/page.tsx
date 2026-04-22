@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
+import CkEditorField from "@/components/CkEditorField";
 import {
   ChevronLeft,
   Plus,
@@ -32,6 +33,7 @@ type Module = {
   id: number;
   title: string;
   lessons: Lesson[];
+  moduleNotes?: string;
 };
 
 type LessonForm = {
@@ -63,11 +65,13 @@ export default function CourseBuilderPage() {
       id: 1,
       title: "Module 1",
       lessons: [],
+      moduleNotes: "",
     },
     {
       id: 2,
       title: "Module 2",
       lessons: [],
+      moduleNotes: "",
     },
   ]);
 
@@ -84,9 +88,11 @@ export default function CourseBuilderPage() {
 
   const [editingModuleId, setEditingModuleId] = useState<number | null>(null);
   const [editingModuleTitle, setEditingModuleTitle] = useState("");
+  const [moduleNotesMap, setModuleNotesMap] = useState<Record<number, string>>({});
 
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const attachmentInputRef = useRef<HTMLInputElement | null>(null);
+  const moduleNotesInputRef = useRef<HTMLInputElement | null>(null);
 
   const resetLessonForm = () => {
     setLessonForm(emptyLessonForm);
@@ -170,22 +176,19 @@ export default function CourseBuilderPage() {
     setAttachmentName(file.name);
   };
 
+  const handleModuleNotesUpload = (e: React.ChangeEvent<HTMLInputElement>, moduleId: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setModuleNotesMap((prev) => ({
+      ...prev,
+      [moduleId]: file.name,
+    }));
+  };
+
   const validateLesson = () => {
     if (!lessonForm.title.trim()) {
       setLessonError("Lesson title is required");
-      return false;
-    }
-
-    if (
-      (lessonForm.videoType === "youtube" || lessonForm.videoType === "external") &&
-      !lessonForm.videoUrl.trim()
-    ) {
-      setLessonError("Video URL is required");
-      return false;
-    }
-
-    if (lessonForm.videoType === "upload" && !uploadedVideoName) {
-      setLessonError("Please upload a video");
       return false;
     }
 
@@ -318,9 +321,9 @@ export default function CourseBuilderPage() {
                 <h1 className="text-xl font-bold text-slate-800">
                   Course Builder
                 </h1>
-                <p className="text-sm text-slate-500">
+                {/* <p className="text-sm text-slate-500">
                   Course ID: {String(courseId)}
-                </p>
+                </p> */}
               </div>
             </div>
 
@@ -405,9 +408,17 @@ export default function CourseBuilderPage() {
                             </button>
                           </div>
                         ) : (
-                          <h3 className="text-lg font-semibold text-slate-800">
-                            {module.title}
-                          </h3>
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-800">
+                              {module.title}
+                            </h3>
+                            {moduleNotesMap[module.id] && (
+                              <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                                <FileText className="h-3 w-3" />
+                                Notes: {moduleNotesMap[module.id]}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
 
@@ -427,6 +438,27 @@ export default function CourseBuilderPage() {
                           <Plus className="h-4 w-4" />
                           Add Lesson
                         </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const input = document.querySelector(
+                              `input[data-module-id="${module.id}"]`
+                            ) as HTMLInputElement;
+                            input?.click();
+                          }}
+                          className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                        >
+                          <FileText className="h-4 w-4" />
+                          Module Notes
+                        </button>
+
+                        <input
+                          type="file"
+                          data-module-id={module.id}
+                          onChange={(e) => handleModuleNotesUpload(e, module.id)}
+                          className="hidden"
+                        />
 
                         <button
                           onClick={() => deleteModule(module.id)}
@@ -642,17 +674,15 @@ export default function CourseBuilderPage() {
                     <label className="mb-2 block text-sm font-medium text-slate-700">
                       Description
                     </label>
-                    <textarea
+                    <CkEditorField
                       value={lessonForm.description}
-                      onChange={(e) =>
+                      onChange={(value) =>
                         setLessonForm((prev) => ({
                           ...prev,
-                          description: e.target.value,
+                          description: value,
                         }))
                       }
-                      rows={4}
                       placeholder="Enter lesson description"
-                      className="w-full rounded-lg border border-slate-300 px-3 py-3 text-sm outline-none focus:border-blue-500"
                     />
                   </div>
 
