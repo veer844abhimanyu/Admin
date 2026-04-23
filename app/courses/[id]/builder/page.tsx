@@ -26,14 +26,14 @@ type Lesson = {
   uploadedVideoName?: string;
   duration: string;
   isPreview: boolean;
-  attachmentName?: string;
+  attachmentNames?: string[];
 };
 
 type Module = {
   id: number;
   title: string;
   lessons: Lesson[];
-  moduleNotes?: string;
+  moduleAttachments?: string[];
 };
 
 type LessonForm = {
@@ -65,13 +65,13 @@ export default function CourseBuilderPage() {
       id: 1,
       title: "Module 1",
       lessons: [],
-      moduleNotes: "",
+      moduleAttachments: [],
     },
     {
       id: 2,
       title: "Module 2",
       lessons: [],
-      moduleNotes: "",
+      moduleAttachments: [],
     },
   ]);
 
@@ -84,11 +84,11 @@ export default function CourseBuilderPage() {
   const [lessonError, setLessonError] = useState("");
 
   const [uploadedVideoName, setUploadedVideoName] = useState("");
-  const [attachmentName, setAttachmentName] = useState("");
+  const [attachmentNames, setAttachmentNames] = useState<string[]>([]);
 
   const [editingModuleId, setEditingModuleId] = useState<number | null>(null);
   const [editingModuleTitle, setEditingModuleTitle] = useState("");
-  const [moduleNotesMap, setModuleNotesMap] = useState<Record<number, string>>({});
+  const [moduleAttachmentsMap, setModuleAttachmentsMap] = useState<Record<number, string[]>>({});
 
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const attachmentInputRef = useRef<HTMLInputElement | null>(null);
@@ -100,7 +100,7 @@ export default function CourseBuilderPage() {
     setSelectedModuleId(null);
     setEditingLessonId(null);
     setUploadedVideoName("");
-    setAttachmentName("");
+    setAttachmentNames([]);
   };
 
   const openNewLessonModal = (moduleId: number | null = null) => {
@@ -122,6 +122,7 @@ export default function CourseBuilderPage() {
         id: Date.now(),
         title: `Module ${nextNumber}`,
         lessons: [],
+        moduleAttachments: [],
       },
     ]);
   };
@@ -170,19 +171,32 @@ export default function CourseBuilderPage() {
   };
 
   const handleAttachmentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files) return;
 
-    setAttachmentName(file.name);
+    const newAttachments = Array.from(files).map((file) => file.name);
+    setAttachmentNames((prev) => [...prev, ...newAttachments]);
   };
 
-  const handleModuleNotesUpload = (e: React.ChangeEvent<HTMLInputElement>, moduleId: number) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const removeAttachment = (index: number) => {
+    setAttachmentNames((prev) => prev.filter((_, i) => i !== index));
+  };
 
-    setModuleNotesMap((prev) => ({
+  const handleModuleAttachmentsUpload = (e: React.ChangeEvent<HTMLInputElement>, moduleId: number) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newAttachments = Array.from(files).map((file) => file.name);
+    setModuleAttachmentsMap((prev) => ({
       ...prev,
-      [moduleId]: file.name,
+      [moduleId]: [...(prev[moduleId] || []), ...newAttachments],
+    }));
+  };
+
+  const removeModuleAttachment = (moduleId: number, index: number) => {
+    setModuleAttachmentsMap((prev) => ({
+      ...prev,
+      [moduleId]: prev[moduleId].filter((_, i) => i !== index),
     }));
   };
 
@@ -206,7 +220,7 @@ export default function CourseBuilderPage() {
       uploadedVideoName: lessonForm.videoType === "upload" ? uploadedVideoName : "",
       duration: lessonForm.duration.trim(),
       isPreview: lessonForm.isPreview,
-      attachmentName,
+      attachmentNames,
     };
   };
 
@@ -284,7 +298,7 @@ export default function CourseBuilderPage() {
     });
 
     setUploadedVideoName(lesson.uploadedVideoName || "");
-    setAttachmentName(lesson.attachmentName || "");
+    setAttachmentNames(lesson.attachmentNames || []);
     setEditingLessonId(lesson.id);
     setSelectedModuleId(typeof moduleId === "number" ? moduleId : null);
     setLessonError("");
@@ -412,11 +426,23 @@ export default function CourseBuilderPage() {
                             <h3 className="text-lg font-semibold text-slate-800">
                               {module.title}
                             </h3>
-                            {moduleNotesMap[module.id] && (
-                              <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                                <FileText className="h-3 w-3" />
-                                Notes: {moduleNotesMap[module.id]}
-                              </p>
+                            {moduleAttachmentsMap[module.id]?.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {moduleAttachmentsMap[module.id].map((attachment, idx) => (
+                                  <div key={idx} className="flex items-center justify-between gap-2 rounded bg-slate-50 px-2 py-1">
+                                    <p className="flex items-center gap-1 text-xs text-slate-600">
+                                      <FileText className="h-3 w-3" />
+                                      {attachment}
+                                    </p>
+                                    <button
+                                      onClick={() => removeModuleAttachment(module.id, idx)}
+                                      className="text-red-600 hover:text-red-800"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             )}
                           </div>
                         )}
@@ -450,13 +476,14 @@ export default function CourseBuilderPage() {
                           className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100"
                         >
                           <FileText className="h-4 w-4" />
-                          Module Notes
+                          Module Attachments
                         </button>
 
                         <input
                           type="file"
+                          multiple
                           data-module-id={module.id}
-                          onChange={(e) => handleModuleNotesUpload(e, module.id)}
+                          onChange={(e) => handleModuleAttachmentsUpload(e, module.id)}
                           className="hidden"
                         />
 
@@ -504,10 +531,10 @@ export default function CourseBuilderPage() {
 
                                   {lesson.duration && <span>{lesson.duration}</span>}
 
-                                  {lesson.attachmentName && (
+                                  {lesson.attachmentNames && lesson.attachmentNames.length > 0 && (
                                     <span className="inline-flex items-center gap-1">
                                       <FileText className="h-4 w-4" />
-                                      {lesson.attachmentName}
+                                      {lesson.attachmentNames.length} attachment{lesson.attachmentNames.length !== 1 ? 's' : ''}
                                     </span>
                                   )}
                                 </div>
@@ -581,10 +608,10 @@ export default function CourseBuilderPage() {
 
                             {lesson.duration && <span>{lesson.duration}</span>}
 
-                            {lesson.attachmentName && (
+                            {lesson.attachmentNames && lesson.attachmentNames.length > 0 && (
                               <span className="inline-flex items-center gap-1">
                                 <FileText className="h-4 w-4" />
-                                {lesson.attachmentName}
+                                {lesson.attachmentNames.length} attachment{lesson.attachmentNames.length !== 1 ? 's' : ''}
                               </span>
                             )}
                           </div>
@@ -812,12 +839,13 @@ export default function CourseBuilderPage() {
 
                     <div>
                       <label className="mb-2 block text-sm font-medium text-slate-700">
-                        Attachment / Notes
+                        Attachments / Notes
                       </label>
 
                       <input
                         ref={attachmentInputRef}
                         type="file"
+                        multiple
                         onChange={handleAttachmentUpload}
                         className="hidden"
                       />
@@ -827,13 +855,30 @@ export default function CourseBuilderPage() {
                         onClick={() => attachmentInputRef.current?.click()}
                         className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm text-slate-700 hover:bg-slate-50"
                       >
-                        Upload Attachment
+                        Upload Attachments
                       </button>
 
-                      {attachmentName && (
-                        <p className="mt-2 text-sm text-slate-600">
-                          Attached: {attachmentName}
-                        </p>
+                      {attachmentNames.length > 0 && (
+                        <div className="mt-3 space-y-2">
+                          {attachmentNames.map((name, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2"
+                            >
+                              <p className="flex items-center gap-2 text-sm text-slate-700">
+                                <FileText className="h-4 w-4" />
+                                {name}
+                              </p>
+                              <button
+                                onClick={() => removeAttachment(idx)}
+                                className="text-red-600 hover:text-red-800"
+                                type="button"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>

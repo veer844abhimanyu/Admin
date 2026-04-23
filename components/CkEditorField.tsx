@@ -112,6 +112,7 @@ export default function CkEditorField({
         editor={ClassicEditor}
         data={value}
         config={{
+          licenseType: "open-source",
           toolbar: [
             "undo",
             "redo",
