@@ -3,9 +3,8 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Calendar, Users, Pencil } from "lucide-react";
-import { Course, CourseStatus, StatusConfig } from "@/types/course";
+import { Course } from "@/types/course";
 import { STATUS_CONFIG } from "@/lib/courseConstants";
-import { confirmDelete } from "@/lib/courseUtils";
 
 interface CourseTableProps {
   courses: Course[];
@@ -25,24 +24,9 @@ export default function CourseTable({
   selectedRows,
   onToggleSelectAll,
   onToggleSelectRow,
-  onPublish,
-  onMoveToTrash,
-  onMoveToDraft,
-  onMakePrivate,
-  onDeletePermanently,
   allVisibleSelected,
 }: CourseTableProps) {
   const router = useRouter();
-
-  const handleDeleteClick = (id: number) => {
-    if (
-      confirmDelete(
-        "Are you sure you want to delete this course permanently? This action cannot be undone."
-      )
-    ) {
-      onDeletePermanently(id);
-    }
-  };
 
   if (courses.length === 0) {
     return (
@@ -112,8 +96,17 @@ export default function CourseTable({
               </div>
 
               <div className="flex items-center gap-2 text-sm text-slate-600">
-                <Users className="h-4 w-4" />
-                {course.students}
+                <Link
+                  href={`/courses/${course.id}/students`}
+                  aria-label={`View enrolled students for ${course.title}`}
+                  title="View enrolled students"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+                >
+                  <Users className="h-4 w-4" />
+                </Link>
+                <span className="font-medium text-slate-700">
+                  {course.students}
+                </span>
               </div>
 
               <div className="flex items-center gap-2 text-sm text-slate-600">

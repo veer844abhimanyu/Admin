@@ -1102,14 +1102,17 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { BookOpen } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 // import { getCustomers, saveCustomers, initialCustomers } from "@/lib/customersStorage";
 import {
   Customer,
   getCustomers,
-  initialCustomers,
   saveCustomers,
 } from "@/lib/customersStorage";
+import { initialCourses } from "@/lib/courseConstants";
+import { getCustomerCourseEnrollments } from "@/lib/customerCourseEnrollments";
+import { Course } from "@/types/course";
 
 type ModalType =
   | null
@@ -1119,12 +1122,26 @@ type ModalType =
   | "newUser"
   | "rowCoupon";
 
+function loadCourses(): Course[] {
+  if (typeof window === "undefined") return initialCourses;
+
+  const saved = localStorage.getItem("admin_courses");
+  if (!saved) return initialCourses;
+
+  try {
+    const parsed = JSON.parse(saved) as Course[];
+    return Array.isArray(parsed) ? parsed : initialCourses;
+  } catch {
+    return initialCourses;
+  }
+}
+
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
+  const [customers, setCustomers] = useState<Customer[]>(getCustomers);
+  const [courses] = useState<Course[]>(loadCourses);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<ModalType>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
 
   const [newUserForm, setNewUserForm] = useState({
     name: "",
@@ -1137,15 +1154,8 @@ export default function CustomersPage() {
   const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => {
-    const storedCustomers = getCustomers();
-    setCustomers(storedCustomers);
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isLoaded) return;
     saveCustomers(customers);
-  }, [customers, isLoaded]);
+  }, [customers]);
 
   const filteredCustomers = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -1293,7 +1303,7 @@ export default function CustomersPage() {
         </div>
 
         <div className="overflow-x-auto rounded-xl border border-gray-200">
-          <table className="w-full min-w-[1150px]">
+          <table className="w-full min-w-[1250px]">
             <thead className="bg-gray-50 text-left text-sm text-gray-700">
               <tr>
                 <th className="px-4 py-3 font-semibold">Name</th>
@@ -1302,44 +1312,62 @@ export default function CustomersPage() {
                 <th className="px-4 py-3 font-semibold">Address</th>
                 <th className="px-4 py-3 font-semibold">Joined @</th>
                 <th className="px-4 py-3 font-semibold">Last Login</th>
+                <th className="px-4 py-3 font-semibold">Courses</th>
                 <th className="px-4 py-3 font-semibold">Note Status</th>
                 <th className="px-4 py-3 font-semibold">Action</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-100 text-sm">
-              {filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-4 text-gray-800">{customer.name}</td>
-                  <td className="px-4 py-4 text-gray-700">{customer.phone}</td>
-                  <td className="px-4 py-4 text-gray-700">{customer.pinCode}</td>
-                  <td className="px-4 py-4 text-gray-700">
-                    <div className="max-w-[240px] break-words">
-                      {customer.address || "-"}
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 text-gray-700">{customer.joined}</td>
-                  <td className="px-4 py-4 text-gray-700">{customer.lastLogin}</td>
-                  <td className="px-4 py-4">
-                    {customer.note?.trim() ? (
-                      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
-                        Note Added
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                        No Note
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-4">
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <button
-                        onClick={() => handleOpenRowCoupon(customer)}
-                        className="rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-green-700"
-                        type="button"
+              {filteredCustomers.map((customer) => {
+                const enrolledCourses = getCustomerCourseEnrollments(
+                  customer.id,
+                  courses
+                );
+
+                return (
+                  <tr key={customer.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-4 text-gray-800">{customer.name}</td>
+                    <td className="px-4 py-4 text-gray-700">{customer.phone}</td>
+                    <td className="px-4 py-4 text-gray-700">{customer.pinCode}</td>
+                    <td className="px-4 py-4 text-gray-700">
+                      <div className="max-w-[240px] break-words">
+                        {customer.address || "-"}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-gray-700">{customer.joined}</td>
+                    <td className="px-4 py-4 text-gray-700">{customer.lastLogin}</td>
+                    <td className="px-4 py-4">
+                      <Link
+                        href={`/customers/${customer.id}/courses`}
+                        aria-label={`View enrolled courses for ${customer.name}`}
+                        title="View enrolled courses"
+                        className="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                       >
-                        + Coupon
-                      </button>
+                        <BookOpen className="h-4 w-4" />
+                        {enrolledCourses.length}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-4">
+                      {customer.note?.trim() ? (
+                        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                          Note Added
+                        </span>
+                      ) : (
+                        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                          No Note
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <button
+                          onClick={() => handleOpenRowCoupon(customer)}
+                          className="rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-green-700"
+                          type="button"
+                        >
+                          + Coupon
+                        </button>
 
                       {/* <Link
                         href={`/admin/customers/${customer.id}/note`}
@@ -1347,20 +1375,21 @@ export default function CustomersPage() {
                       >
                         Add Note
                       </Link> */}
-                      <Link
-  href={`/customers/${customer.id}/note`}
-  className="rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white transition hover:bg-blue-700"
->
-  Add Note
-</Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <Link
+                          href={`/customers/${customer.id}/note`}
+                          className="rounded-md bg-blue-600 px-3 py-2 text-center text-xs font-medium text-white transition hover:bg-blue-700"
+                        >
+                          Add Note
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
 
               {filteredCustomers.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-500">
+                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-gray-500">
                     No customers found.
                   </td>
                 </tr>

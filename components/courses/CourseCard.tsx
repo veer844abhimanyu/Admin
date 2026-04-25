@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Users } from "lucide-react";
 import { Course } from "@/types/course";
 import { STATUS_CONFIG } from "@/lib/courseConstants";
 import { confirmDelete } from "@/lib/courseUtils";
@@ -74,7 +75,14 @@ export default function CourseCard({
             </p>
             <p>
               <span className="font-medium text-slate-700">Students:</span>{" "}
-              {course.students}
+              <Link
+                href={`/courses/${course.id}/students`}
+                aria-label={`View enrolled students for ${course.title}`}
+                className="ml-1 inline-flex items-center gap-1 rounded-md border border-slate-200 px-2 py-1 text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600"
+              >
+                <Users className="h-4 w-4" />
+                {course.students}
+              </Link>
             </p>
             <p className="sm:col-span-2">
               <span className="font-medium text-slate-700">Date:</span>{" "}
