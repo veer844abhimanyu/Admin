@@ -26,7 +26,13 @@ export default function CustomerNotePage() {
     const updatedCustomers = customers.map((item) =>
       item.id === customer.id ? { ...item, note } : item
     );
+    const payload = {
+      customerId: customer.id,
+      customerName: customer.name,
+      note,
+    };
 
+    console.log("Customer Note Saved:", payload);
     saveCustomers(updatedCustomers);
     setCustomers(updatedCustomers);
     router.push("/customers");

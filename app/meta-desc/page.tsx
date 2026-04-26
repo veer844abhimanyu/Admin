@@ -115,6 +115,7 @@ export default function MetaDescPage() {
       page: form.page || "General",
     };
 
+    console.log("Meta Description Added:", newItem);
     setItems((prev) => [newItem, ...prev]);
     resetForm();
     setModal(null);
@@ -141,17 +142,18 @@ export default function MetaDescPage() {
       return;
     }
 
+    const updatedItem: MetaItem = {
+      ...selectedItem,
+      metaTitle: form.metaTitle,
+      metaKeywords: form.metaKeywords,
+      description: form.description,
+      page: form.page,
+    };
+
+    console.log("Meta Description Updated:", updatedItem);
     setItems((prev) =>
       prev.map((item) =>
-        item.id === selectedItem.id
-          ? {
-              ...item,
-              metaTitle: form.metaTitle,
-              metaKeywords: form.metaKeywords,
-              description: form.description,
-              page: form.page,
-            }
-          : item,
+        item.id === selectedItem.id ? updatedItem : item,
       ),
     );
 

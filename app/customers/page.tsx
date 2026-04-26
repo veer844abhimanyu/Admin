@@ -1199,6 +1199,12 @@ export default function CustomersPage() {
   const handleAssignCoupon = () => {
     if (!selectedCustomer || !couponCode.trim()) return;
 
+    const payload = {
+      customerId: selectedCustomer.id,
+      customerName: selectedCustomer.name,
+      couponCode: couponCode.trim(),
+    };
+
     setCustomers((prev) =>
       prev.map((customer) =>
         customer.id === selectedCustomer.id
@@ -1207,6 +1213,7 @@ export default function CustomersPage() {
       )
     );
 
+    console.log("Customer Coupon Assigned:", payload);
     setCouponCode("");
     setSelectedCustomer(null);
     setModal(null);
@@ -1236,6 +1243,7 @@ export default function CustomersPage() {
       note: "",
     };
 
+    console.log("Customer Created:", newCustomer);
     setCustomers((prev) => [newCustomer, ...prev]);
     setNewUserForm({
       name: "",

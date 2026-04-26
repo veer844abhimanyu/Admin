@@ -88,7 +88,9 @@ export default function CourseBuilderPage() {
 
   const [editingModuleId, setEditingModuleId] = useState<number | null>(null);
   const [editingModuleTitle, setEditingModuleTitle] = useState("");
-  const [moduleAttachmentsMap, setModuleAttachmentsMap] = useState<Record<number, string[]>>({});
+  const [moduleAttachmentsMap, setModuleAttachmentsMap] = useState<
+    Record<number, string[]>
+  >({});
 
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const attachmentInputRef = useRef<HTMLInputElement | null>(null);
@@ -310,6 +312,7 @@ export default function CourseBuilderPage() {
       enableModules,
       modules,
       directLessons,
+      moduleAttachmentsMap,
     };
 
     console.log("Builder Saved:", payload);

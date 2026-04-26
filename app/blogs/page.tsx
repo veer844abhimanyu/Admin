@@ -137,6 +137,7 @@ export default function BlogsPage() {
       updatedOn: today,
     };
 
+    console.log("Blog Added:", newBlog);
     setBlogs((prev) => [newBlog, ...prev]);
     resetForm();
     setModal(null);
@@ -151,18 +152,17 @@ export default function BlogsPage() {
       year: "numeric",
     });
 
+    const updatedBlog: Blog = {
+      ...selectedBlog,
+      title: blogForm.title,
+      image: blogForm.image.trim() || selectedBlog.image,
+      status: blogForm.status,
+      updatedOn: today,
+    };
+
+    console.log("Blog Updated:", updatedBlog);
     setBlogs((prev) =>
-      prev.map((blog) =>
-        blog.id === selectedBlog.id
-          ? {
-              ...blog,
-              title: blogForm.title,
-              image: blogForm.image.trim() || blog.image,
-              status: blogForm.status,
-              updatedOn: today,
-            }
-          : blog
-      )
+      prev.map((blog) => (blog.id === selectedBlog.id ? updatedBlog : blog))
     );
 
     resetForm();

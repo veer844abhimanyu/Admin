@@ -158,6 +158,7 @@ export default function ShareEarnPage() {
       status: offerForm.status,
     };
 
+    console.log("Share Earn Offer Added:", newOffer);
     setOffers((prev) => [newOffer, ...prev]);
     resetForm();
     setModal(null);
@@ -175,19 +176,20 @@ export default function ShareEarnPage() {
       return;
     }
 
+    const updatedOffer: ShareEarnItem = {
+      ...selectedOffer,
+      title: offerForm.title,
+      referralCode: offerForm.referralCode,
+      reward: offerForm.reward,
+      minPurchase: offerForm.minPurchase,
+      expiresOn: offerForm.expiresOn,
+      status: offerForm.status,
+    };
+
+    console.log("Share Earn Offer Updated:", updatedOffer);
     setOffers((prev) =>
       prev.map((offer) =>
-        offer.id === selectedOffer.id
-          ? {
-              ...offer,
-              title: offerForm.title,
-              referralCode: offerForm.referralCode,
-              reward: offerForm.reward,
-              minPurchase: offerForm.minPurchase,
-              expiresOn: offerForm.expiresOn,
-              status: offerForm.status,
-            }
-          : offer
+        offer.id === selectedOffer.id ? updatedOffer : offer
       )
     );
 

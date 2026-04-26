@@ -143,6 +143,18 @@ export default function NewCoursePage() {
       status: "published" as const,
     };
 
+    const payload = {
+      ...newCourse,
+      description: courseDescription,
+      highlights: courseHighlights,
+      featured,
+      slug,
+      selectedCategories,
+      featuredImage: featuredImage?.name || null,
+      featuredVideo: featuredVideo?.name || null,
+      attachments: attachments.map((file) => file.name),
+    };
+
     try {
       const existingCoursesRaw = localStorage.getItem("admin_courses");
       const existingCourses = existingCoursesRaw
@@ -151,6 +163,7 @@ export default function NewCoursePage() {
       const updatedCourses = [newCourse, ...existingCourses];
       localStorage.setItem("admin_courses", JSON.stringify(updatedCourses));
 
+      console.log("Course Published:", payload);
       alert("Course published successfully!");
       router.push("/courses");
     } catch (e) {

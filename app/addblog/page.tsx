@@ -29,6 +29,19 @@ export default function AddBlogPage() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    const form = e.currentTarget as HTMLFormElement;
+    const formData = new FormData(form);
+    const payload = {
+      title: String(formData.get("title") || ""),
+      category: String(formData.get("category") || ""),
+      image: fileName,
+      metaTitle: String(formData.get("metaTitle") || ""),
+      metaDescription: String(formData.get("metaDescription") || ""),
+      slug: String(formData.get("slug") || ""),
+      content: blogContent,
+    };
+
+    console.log("Blog Saved:", payload);
     alert("Blog saved successfully!");
     router.push("/blogs");
   };
@@ -69,6 +82,7 @@ export default function AddBlogPage() {
                       <FileText className="h-4 w-4" />
                     </div>
                     <input
+                      name="title"
                       type="text"
                       required
                       className="h-10 w-full px-3 text-sm outline-none text-gray-700 font-medium"
@@ -83,7 +97,7 @@ export default function AddBlogPage() {
                     Select category
                   </label>
                   <div className="relative">
-                    <select className="h-10 w-full appearance-none rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm text-gray-700 font-medium outline-none focus:border-[#ffc107] focus:ring-1 focus:ring-[#ffc107] transition-shadow">
+                    <select name="category" className="h-10 w-full appearance-none rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm text-gray-700 font-medium outline-none focus:border-[#ffc107] focus:ring-1 focus:ring-[#ffc107] transition-shadow">
                       <option value="">Rog aur Ayurvedic Upchar</option>
                       <option value="yoga">Yoga and Meditation</option>
                       <option value="diet">Healthy Diet</option>
@@ -132,6 +146,7 @@ export default function AddBlogPage() {
                     Meta Title<span className="text-red-500">*</span>
                   </label>
                   <input
+                    name="metaTitle"
                     type="text"
                     required
                     className="h-14 w-full rounded-md border border-gray-300 px-3 text-sm font-medium text-gray-700 outline-none focus:border-[#ffc107] focus:ring-1 focus:ring-[#ffc107] transition-shadow"
@@ -144,6 +159,7 @@ export default function AddBlogPage() {
                     Meta Desc<span className="text-red-500">*</span>
                   </label>
                   <textarea
+                    name="metaDescription"
                     required
                     className="w-full rounded-md border border-gray-300 p-3 text-sm font-medium text-gray-700 outline-none focus:border-[#ffc107] focus:ring-1 focus:ring-[#ffc107] min-h-[56px] resize-none transition-shadow"
                     rows={2}
@@ -158,6 +174,7 @@ export default function AddBlogPage() {
                   Slug <span className="text-sm font-semibold text-gray-800">(Etx ayush-yog-jalndhara-pnjah)</span>
                 </label>
                 <input
+                  name="slug"
                   type="text"
                   className="h-10 w-full rounded-md border border-gray-300 px-3 text-sm font-medium text-gray-700 outline-none focus:border-[#ffc107] focus:ring-1 focus:ring-[#ffc107] transition-shadow"
                   placeholder="aam-avastha-mein-chiktsa-kyon-nahi-karni-karni-chahiye"

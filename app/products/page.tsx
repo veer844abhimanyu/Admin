@@ -183,6 +183,7 @@ export default function ProductsPage() {
       updatedOn: today,
     };
 
+    console.log("Product Added:", newProduct);
     setProducts((prev) => [newProduct, ...prev]);
     resetForm();
     setModal(null);
@@ -210,20 +211,21 @@ export default function ProductsPage() {
       year: "numeric",
     });
 
+    const updatedProduct: Product = {
+      ...selectedProduct,
+      name: productForm.name,
+      image: productForm.image.trim() || selectedProduct.image,
+      category: productForm.category,
+      price,
+      stock,
+      status: stock === 0 ? "Out of Stock" : productForm.status,
+      updatedOn: today,
+    };
+
+    console.log("Product Updated:", updatedProduct);
     setProducts((prev) =>
       prev.map((product) =>
-        product.id === selectedProduct.id
-          ? {
-              ...product,
-              name: productForm.name,
-              image: productForm.image.trim() || product.image,
-              category: productForm.category,
-              price,
-              stock,
-              status: stock === 0 ? "Out of Stock" : productForm.status,
-              updatedOn: today,
-            }
-          : product
+        product.id === selectedProduct.id ? updatedProduct : product
       )
     );
 

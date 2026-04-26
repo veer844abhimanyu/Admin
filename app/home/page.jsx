@@ -58,6 +58,7 @@ export default function EditHomePage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Home Page Saved:", formData);
     alert("Home page updated successfully!");
   };
 
