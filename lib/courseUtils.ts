@@ -1,4 +1,5 @@
-import { Course, CSV_HEADERS } from "@/lib/courseConstants";
+import { CSV_HEADERS } from "@/lib/courseConstants";
+import { Course } from "@/types/course";
 
 export function exportCoursesToCSV(courses: Course[]): void {
   const headers = Array.from(CSV_HEADERS);

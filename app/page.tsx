@@ -74,7 +74,6 @@ export default function HomePage() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const [stats, setStats] = useState(initialStats);
-  const [loading, setLoading] = useState(true);
 
   // Fetch stats from API
   const fetchStats = async () => {
@@ -94,8 +93,6 @@ export default function HomePage() {
     } catch (error) {
       console.error("Error fetching stats:", error);
       // Keep existing stats if fetch fails
-    } finally {
-      setLoading(false);
     }
   };
 

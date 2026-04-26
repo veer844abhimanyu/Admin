@@ -18,7 +18,7 @@ import {
   Upload,
 } from "lucide-react";
 
-const CkEditorField = dynamic(() => import("@/components/CkEditorField"), {
+const TiptapEditorField = dynamic(() => import("@/components/TiptapEditorField"), {
   ssr: false,
 });
 
@@ -236,7 +236,7 @@ export default function NewCoursePage() {
                 Course Description
               </label>
 
-              <CkEditorField
+              <TiptapEditorField
                 value={courseDescription}
                 onChange={setCourseDescription}
                 placeholder="Write your course description here..."

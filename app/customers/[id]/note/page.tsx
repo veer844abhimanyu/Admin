@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminLayout from "@/components/AdminLayout";
 import { Customer, getCustomers, saveCustomers } from "@/lib/customersStorage";
@@ -12,22 +12,13 @@ export default function CustomerNotePage() {
 
   const customerId = useMemo(() => Number(params.id), [params.id]);
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [customer, setCustomer] = useState<Customer | null>(null);
-  const [note, setNote] = useState("");
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const storedCustomers = getCustomers();
-    setCustomers(storedCustomers);
-
-    const foundCustomer =
-      storedCustomers.find((item) => item.id === customerId) || null;
-
-    setCustomer(foundCustomer);
-    setNote(foundCustomer?.note || "");
-    setLoaded(true);
-  }, [customerId]);
+  const [customers, setCustomers] = useState<Customer[]>(getCustomers);
+  const customer =
+    customers.find((item) => item.id === customerId) || null;
+  const [note, setNote] = useState(
+    () =>
+      getCustomers().find((item) => item.id === customerId)?.note || "",
+  );
 
   const handleSave = () => {
     if (!customer) return;
@@ -40,14 +31,6 @@ export default function CustomerNotePage() {
     setCustomers(updatedCustomers);
     router.push("/customers");
   };
-
-  if (!loaded) {
-    return (
-      <AdminLayout>
-        <div className="rounded-2xl bg-white p-6 shadow-sm">Loading...</div>
-      </AdminLayout>
-    );
-  }
 
   if (!customer) {
     return (

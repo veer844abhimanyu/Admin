@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
-import CkEditorField from "@/components/CkEditorField";
+import TiptapEditorField from "@/components/TiptapEditorField";
 import {
   ChevronLeft,
   Plus,
@@ -92,7 +92,6 @@ export default function CourseBuilderPage() {
 
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const attachmentInputRef = useRef<HTMLInputElement | null>(null);
-  const moduleNotesInputRef = useRef<HTMLInputElement | null>(null);
 
   const resetLessonForm = () => {
     setLessonForm(emptyLessonForm);
@@ -701,7 +700,7 @@ export default function CourseBuilderPage() {
                     <label className="mb-2 block text-sm font-medium text-slate-700">
                       Description
                     </label>
-                    <CkEditorField
+                    <TiptapEditorField
                       value={lessonForm.description}
                       onChange={(value) =>
                         setLessonForm((prev) => ({

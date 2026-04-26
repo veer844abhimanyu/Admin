@@ -1,7 +1,9 @@
+import { LucideIcon } from "lucide-react";
+
 export type SidebarItem = {
   id: string;
   label: string;
-  icon: any;
+  icon: LucideIcon;
 };
 
 export type StatCardItem = {

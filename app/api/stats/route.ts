@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // This is sample data structure - replace with actual database queries
 // For MongoDB example: const customers = await db.collection('customers').countDocuments();
@@ -31,7 +31,7 @@ const getStatsFromDatabase = async (): Promise<StatsData> => {
   };
 };
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const stats = await getStatsFromDatabase();
     return NextResponse.json(stats, { status: 200 });

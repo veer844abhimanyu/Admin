@@ -3,9 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { 
-  FileText, 
   Image as ImageIcon, 
-  Search, 
   Save, 
   X, 
   Layout, 
@@ -70,7 +68,7 @@ export default function EditHomePage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Customize Home Page</h1>
-            <p className="text-sm text-slate-500">Update your website's hero section and SEO presence.</p>
+            <p className="text-sm text-slate-500">Update your website&apos;s hero section and SEO presence.</p>
           </div>
           <button
             onClick={handleSubmit}

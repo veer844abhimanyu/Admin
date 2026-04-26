@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, ChangeEvent } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutGrid,
   Users,
@@ -24,6 +24,16 @@ import {
 
 const DEFAULT_IMAGE = "https://i.pravatar.cc/100?img=12";
 const DEFAULT_NAME = "Dronachary Shastri";
+
+function getStoredAdminImage() {
+  if (typeof window === "undefined") return DEFAULT_IMAGE;
+  return localStorage.getItem("adminImage") || DEFAULT_IMAGE;
+}
+
+function getStoredAdminName() {
+  if (typeof window === "undefined") return DEFAULT_NAME;
+  return localStorage.getItem("adminName") || DEFAULT_NAME;
+}
 
 type MenuItem = {
   label: string;
@@ -57,22 +67,16 @@ type Props = {
 
 export default function AdminSidebar({ open, setOpen }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   // const pathname = usePathname();
 
-  const [adminImage, setAdminImage] = useState<string>(DEFAULT_IMAGE);
-  const [adminName, setAdminName] = useState<string>(DEFAULT_NAME);
+  const [adminImage, setAdminImage] = useState<string>(getStoredAdminImage);
+  const [adminName, setAdminName] = useState<string>(getStoredAdminName);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const savedImage = localStorage.getItem("adminImage");
-    const savedName = localStorage.getItem("adminName");
-
-    if (savedImage) setAdminImage(savedImage);
-    if (savedName) setAdminName(savedName);
-  }, []);
 
   useEffect(() => {
     const updateImage = () => {
@@ -132,6 +136,20 @@ export default function AdminSidebar({ open, setOpen }: Props) {
     localStorage.removeItem("adminImage");
     window.dispatchEvent(new Event("adminImageUpdated"));
     setShowPhotoMenu(false);
+  };
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.replace("/login");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   return (
@@ -252,11 +270,13 @@ export default function AdminSidebar({ open, setOpen }: Props) {
 
         <div className="border-t border-slate-200 p-4">
           <button
-            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-left text-[15px] font-semibold text-slate-700 hover:bg-slate-100"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left text-[15px] font-semibold text-slate-700 transition hover:bg-orange-50 hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200 disabled:cursor-not-allowed disabled:opacity-60"
             type="button"
           >
             <LogOut className="h-5 w-5 text-orange-500" />
-            Logout
+            {isLoggingOut ? "Logging out..." : "Logout"}
           </button>
         </div>
       </aside>

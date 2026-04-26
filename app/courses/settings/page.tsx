@@ -103,7 +103,7 @@ export default function CourseSettingsPage() {
   const [showFaq, setShowFaq] = useState(true);
   const [faqs, setFaqs] = useState<FaqItem[]>([
     {
-      id: Date.now(),
+      id: 1,
       title: "Untitled",
       content: "",
     },

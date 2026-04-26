@@ -1,6 +1,5 @@
 "use client";
 
-import { CourseStatus } from "@/types/course";
 import { confirmDelete } from "@/lib/courseUtils";
 
 interface CourseBulkActionBarProps {

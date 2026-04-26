@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef, useState, useEffect } from "react";
+import { Suspense, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -17,7 +17,7 @@ import {
   Upload,
 } from "lucide-react";
 
-const CkEditorField = dynamic(() => import("@/components/CkEditorField"), {
+const TiptapEditorField = dynamic(() => import("@/components/TiptapEditorField"), {
   ssr: false,
 });
 
@@ -58,17 +58,30 @@ type Category = {
   checked: boolean;
 };
 
-export default function EditCoursePage() {
+function EditCourseForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const selectedCourse = initialCourses.find((course) => course.id === Number(id));
 
-  const [courseName, setCourseName] = useState("");
-  const [courseDescription, setCourseDescription] = useState("");
-  const [courseHighlights, setCourseHighlights] = useState(".");
+  const [courseName, setCourseName] = useState(selectedCourse?.title || "");
+  const [courseDescription, setCourseDescription] = useState(
+    selectedCourse?.description || "",
+  );
+  const [courseHighlights, setCourseHighlights] = useState(
+    selectedCourse?.highlights || ".",
+  );
   const [featured, setFeatured] = useState(false);
-  const [slug, setSlug] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [slug, setSlug] = useState(selectedCourse?.slug || "");
+  const [categories, setCategories] = useState<Category[]>(() =>
+    selectedCourse
+      ? selectedCourse.categories.map((cat, idx) => ({
+          id: idx,
+          name: cat,
+          checked: true,
+        }))
+      : [],
+  );
 
   const [newCategoryName, setNewCategoryName] = useState("");
   const [showAddCategoryInput, setShowAddCategoryInput] = useState(false);
@@ -80,26 +93,6 @@ export default function EditCoursePage() {
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const attachmentInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (id) {
-      const course = initialCourses.find((c) => c.id === Number(id));
-      if (course) {
-        setCourseName(course.title);
-        setSlug(course.slug);
-        setCourseDescription(course.description || "");
-        setCourseHighlights(course.highlights || ".");
-        // For categories, we convert string array to Category object array
-        setCategories(
-          course.categories.map((cat, idx) => ({
-            id: idx,
-            name: cat,
-            checked: true,
-          })),
-        );
-      }
-    }
-  }, [id]);
 
   const toggleCategory = (id: number) => {
     setCategories((prev) =>
@@ -256,7 +249,7 @@ export default function EditCoursePage() {
                 Course Description
               </label>
 
-              <CkEditorField
+              <TiptapEditorField
                 value={courseDescription}
                 onChange={setCourseDescription}
                 placeholder="Write your course description here..."
@@ -530,5 +523,13 @@ export default function EditCoursePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function EditCoursePage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-slate-500">Loading course...</div>}>
+      <EditCourseForm />
+    </Suspense>
   );
 }

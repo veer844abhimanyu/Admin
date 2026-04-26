@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "@/components/AdminLayout";
 
-const CkEditorField = dynamic(() => import("@/components/CkEditorField"), {
+const TiptapEditorField = dynamic(() => import("@/components/TiptapEditorField"), {
   ssr: false,
 });
 
@@ -171,7 +171,7 @@ export default function AddBlogPage() {
                 </label>
 
                 <div className="rounded-md border border-gray-300 overflow-hidden focus-within:ring-1 focus-within:ring-[#ffc107] focus-within:border-[#ffc107] transition-shadow">
-                  <CkEditorField
+                  <TiptapEditorField
                     value={blogContent}
                     onChange={setBlogContent}
                     placeholder="Enter blog content here..."

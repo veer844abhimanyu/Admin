@@ -1,19 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { ChangeEvent, useState } from "react";
+
+function getStoredAdminImage() {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("adminImage");
+}
 
 export default function AdminProfile() {
-  const [image, setImage] = useState<string | null>(null);
-
-  // Load saved image
-  useEffect(() => {
-    const saved = localStorage.getItem("adminImage");
-    if (saved) setImage(saved);
-  }, []);
+  const [image, setImage] = useState<string | null>(getStoredAdminImage);
 
   // Handle upload
-  const handleChange = (e: any) => {
-    const file = e.target.files[0];
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
@@ -30,6 +29,7 @@ export default function AdminProfile() {
       <label className="cursor-pointer">
         <img
           src={image || "https://i.pravatar.cc/100"}
+          alt="Admin profile"
           className="w-10 h-10 rounded-full object-cover border"
         />
         <input type="file" className="hidden" onChange={handleChange} />

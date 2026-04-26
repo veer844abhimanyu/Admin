@@ -13,10 +13,24 @@ import { useCourseFilter } from "@/hooks/useCourseFilter";
 import { useCourseSelection } from "@/hooks/useCourseSelection";
 import { initialCourses } from "@/lib/courseConstants";
 import { Course, TabKey } from "@/types/course";
-import { confirmDelete } from "@/lib/courseUtils";
+
+function loadCourses(): Course[] {
+  if (typeof window === "undefined") return initialCourses;
+
+  const saved = localStorage.getItem("admin_courses");
+  if (!saved) return initialCourses;
+
+  try {
+    const parsed = JSON.parse(saved) as Course[];
+    return Array.isArray(parsed) ? parsed : initialCourses;
+  } catch (error) {
+    console.error("Error loading courses", error);
+    return initialCourses;
+  }
+}
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>(initialCourses);
+  const [courses, setCourses] = useState<Course[]>(loadCourses);
   const {
     activeTab,
     setActiveTab,
@@ -45,18 +59,6 @@ export default function CoursesPage() {
     updateCourseStatus,
     deleteSelected,
   } = useCourseSelection();
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("admin_courses");
-    if (saved) {
-      try {
-        setCourses(JSON.parse(saved));
-      } catch (e) {
-        console.error("Error loading courses", e);
-      }
-    }
-  }, []);
 
   // Save to localStorage on change
   useEffect(() => {
